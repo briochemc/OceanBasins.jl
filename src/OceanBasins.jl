@@ -55,13 +55,14 @@ issea(ocn::OceanOrSea) = occursin("Sea", name(ocn))
 oceannames(ocns::OceansAndSeas) = [name(ocn) for ocn in ocns if isocean(ocn)]
 seanames(ocns::OceansAndSeas) = [name(ocn) for ocn in ocns if issea(ocn)]
 
-oceans(ocns::OceansAndSeas) = [ocn for ocn in ocns if isocean(ocn)]
+oceans() = [ocn for ocn in OceansAndSeas() if isocean(ocn)]
 
 function whichocean(lat,lon)
 
     return nothing
 end
 
+export OceansAndSeas, isocean, oceans
 
 
 function registerfile(datadepname)
