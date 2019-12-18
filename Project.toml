@@ -6,3 +6,5 @@ version = "0.1.0"
 [deps]
 DataDeps = "124859b0-ceae-595e-8997-d05f6a7a8dfe"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+RoamesGeometry = "7182eba8-869d-4e5d-8801-8896391ab281"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"

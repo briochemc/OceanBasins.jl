@@ -1,6 +1,7 @@
 module OceanBasins
 
 using DataDeps, DelimitedFiles
+using StaticArrays, RoamesGeometry
 
 function readdata(datadepname)
     registerfile(datadepname)
@@ -9,60 +10,81 @@ function readdata(datadepname)
     return readdlm(filepath, '\t'; header=true, skipstart=15)
 end
 
-struct OceanOrSea
+struct OceanOrSea{T}
     name::String
-    lat::Vector{Float64}
-    lon::Vector{Float64}
-    index::Vector{Int64}
+    polygon::T
 end
 
-struct OceansAndSeas
-    data::Vector{OceanOrSea}
+struct Point2D{T} <: FieldVector{2,T}
+    lat::T
+    lon::T
 end
 
-function OceansAndSeas(datadepname="Oceans_and_seas")
+function oceanpolygons(datadepname="Oceans_and_seas")
     cells, headers = readdata(datadepname)
-    data = OceanOrSea[]
-    lat = Float64[]
-    lon = Float64[]
-    index = Int64[]
-    name = ""
-    for i in 1:size(cells,1)
-        if cells[i,5] == 1 
-            i ≠ 1 && push!(data, OceanOrSea(name,copy(lat),copy(lon),copy(index)))
-            name = cells[i,1]
-            empty!(lat)
-            empty!(lon)
-            empty!(index)
-        end
-        push!(lat, cells[i,2])
-        push!(lon, cells[i,3])
-        push!(index, cells[i,5])
+    names = unique(string.(cells[:,1]))
+    out = OceanOrSea[]
+    for name in names
+        occursin("Ocean", name) || continue
+        iocn = findall(isequal(name), cells[:,1])
+        poly = Polygon([Point2D(cells[j,2], antimeridian(cells[j,3])) for j in iocn]...)
+        push!(out, OceanOrSea(name, poly))
     end
-    return OceansAndSeas(data)
+    return out
 end
 
-Base.iterate(ocns::OceansAndSeas) = ocns.data[1], 1
-Base.iterate(ocns::OceansAndSeas, i) = i == length(ocns) ? nothing : (ocns.data[i+1], i+1)
+# Convert ±179.99899 to ±180
+antimeridian(lon) = (abs(lon) == 179.99899) ? 181.0sign(lon) : lon
 
-Base.length(ocns::OceansAndSeas) = length(ocns.data)
 
-Base.names(ocns::OceansAndSeas) = [name(ocn) for ocn in ocns]
-name(ocn::OceanOrSea) = ocn.name
+whichoceans(P::Point2D) = [ocn.name for ocn in OCEANS if P ∈ ocn.polygon]
+whichoceans(lat,lon) = whichoceans(Point2D(lat,lon))
 
-isocean(ocn::OceanOrSea) = occursin("Ocean", name(ocn))
-issea(ocn::OceanOrSea) = occursin("Sea", name(ocn))
-oceannames(ocns::OceansAndSeas) = [name(ocn) for ocn in ocns if isocean(ocn)]
-seanames(ocns::OceansAndSeas) = [name(ocn) for ocn in ocns if issea(ocn)]
 
-oceans() = [ocn for ocn in OceansAndSeas() if isocean(ocn)]
+whichsuperoceans(P::Point2D) = [ocn.name for ocn in SUPEROCEANS if P ∈ ocn.polygon]
+whichsuperoceans(lat,lon) = whichsuperoceans(Point2D(lat,lon))
 
-function whichocean(lat,lon)
-
-    return nothing
+function whichsuperocean(lat,lon)
+    list = whichsuperoceans(lat,lon)
+    isempty(list) && return ""
+    (length(list) == 1) && return shorten_name(list[1])
+    return shorten_name.(list)
 end
 
-export OceansAndSeas, isocean, oceans
+export OceanOrSea, oceanpolygons, whichsuperocean
+
+ispacific(P::Point2D) = P ∈ PACe.polygon || P ∈ PACw.polygon
+ispacific(lat,lon) = ispacific(Point2D(lat,lon))
+
+isatlantic(P::Point2D) = P ∈ ATL.polygon
+isatlantic(lat,lon) = isatlantic(Point2D(lat,lon))
+
+isindian(P::Point2D) = P ∈ IND.polygon
+isindian(lat,lon) = isindian(Point2D(lat,lon))
+
+isarctic(P::Point2D) = P ∈ ARCe.polygon || P ∈ ARCw.polygon
+isarctic(lat,lon) = isarctic(Point2D(lat,lon))
+
+isantarctic(lat,lon) = lat ≤ -40
+
+export ispacific, isatlantic, isindian, isarctic, isantarctic
+
+
+
+
+function shorten_name(name)
+    name = replace(name, " Ocean" => "")
+    name = replace(name, "South " => "S")
+    name = replace(name, "North " => "N")
+    name = replace(name, ", eastern part" => "e")
+    name = replace(name, ", western part" => "w")
+    name = replace(name, "Atlantic" => "ATL")
+    name = replace(name, "Pacific" => "PAC")
+    name = replace(name, "Indian" => "IND")
+    name = replace(name, "Arctic" => "ARC")
+    return name
+end
+
 
 
 function registerfile(datadepname)
@@ -85,6 +107,17 @@ function registerfile(datadepname)
     ))
 end
 
+# once everything is set up, build it and export it
+const OCEANS = oceanpolygons()
+const SUPEROCEANS = OCEANS[[5,6,9,10,11,12]]
+const PACe = SUPEROCEANS[1]
+const PACw = SUPEROCEANS[2]
+const ATL = SUPEROCEANS[3]
+const IND = SUPEROCEANS[4]
+const ARCe = SUPEROCEANS[5]
+const ARCw = SUPEROCEANS[6]
+
+export OCEANS, SUPEROCEANS
 
 
 end # module
