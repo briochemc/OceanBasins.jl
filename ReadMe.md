@@ -3,7 +3,7 @@
 
 # OceanBasins.jl
 
-A set of simple functions to determine which ocean basin a (lon,lat) coordinate is in.
+A set of simple functions to determine which ocean basin a (lat,lon) coordinate is in.
 
 <p>
   <a href="https://github.com/briochemc/OceanBasins.jl/actions">
@@ -21,11 +21,10 @@ A set of simple functions to determine which ocean basin a (lon,lat) coordinate 
 </p>
 
 
-I made this package for myself so it may come with bugs.
-It mainly contains some functions like, e.g., `ispacific`, to algorithmically determine if a (lat,lon) coordinate lies inan ocean basin or a sea of interest.
+It mainly contains some functions like, e.g., `ispacific`, to algorithmically determine if a (lat,lon) coordinate lies in an ocean basin or a sea of interest.
 I plan to use it to mask regions of interest for global marine biogeochemical modelling (with [AIBECS.jl](https://github.com/briochemc/AIBECS.jl)).
 
-The image at the top was produced by using the `ispacific`-like functions (and using GMT.jl):
+The image at the top was produced by using `ispacific`-like functions (and using GMT.jl):
 
 ```julia
 using Libdl
@@ -42,4 +41,5 @@ colors = [sum(iocn * isocns[iocn](lat,lon,OCEANS) for iocn in 1:length(isocns)) 
 scatter!(lons, lats, title="Which ocean basin?", marker=:c, size=0.1, zcolor=colors, show=1, savefig="demo.png")
 ```
 
-
+I made this package for myself so it likely has some bugs.
+PRs welcome!
