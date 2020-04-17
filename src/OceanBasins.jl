@@ -1,7 +1,9 @@
 module OceanBasins
 
 using DataDeps, DelimitedFiles
-using StaticArrays, RoamesGeometry
+using StaticArrays, PolygonOps
+
+
 
 function readdata(datadepname)
     registerfile(datadepname)
@@ -14,63 +16,102 @@ struct OceanOrSea{T}
     name::String
     polygon::T
 end
+name(o::OceanOrSea) = o.name
+polygon(o::OceanOrSea) = o.polygon
 
 struct Point2D{T} <: FieldVector{2,T}
     lat::T
     lon::T
 end
+lat(P::Point2D) = P.lat
+lon(P::Point2D) = P.lon
 
 function oceanpolygons(datadepname="Oceans_and_seas")
     cells, headers = readdata(datadepname)
     names = unique(string.(cells[:,1]))
     out = OceanOrSea[]
     for name in names
-        occursin("Ocean", name) || continue
         iocn = findall(isequal(name), cells[:,1])
-        poly = Polygon([Point2D(cells[j,2], antimeridian(cells[j,3])) for j in iocn]...)
+        poly = [Point2D(cells[j,2], fixmeridian(cells[j,3])) for j in iocn]
         push!(out, OceanOrSea(name, poly))
     end
     return out
 end
 
-# Convert ±179.99899 to ±180
-antimeridian(lon) = (abs(lon) == 179.99899) ? 181.0sign(lon) : lon
-
-
-whichoceans(P::Point2D) = [ocn.name for ocn in OCEANS if P ∈ ocn.polygon]
-whichoceans(lat,lon) = whichoceans(Point2D(lat,lon))
-
-
-whichsuperoceans(P::Point2D) = [ocn.name for ocn in SUPEROCEANS if P ∈ ocn.polygon]
-whichsuperoceans(lat,lon) = whichsuperoceans(Point2D(lat,lon))
-
-function whichsuperocean(lat,lon)
-    list = whichsuperoceans(lat,lon)
-    isempty(list) && return ""
-    (length(list) == 1) && return shorten_name(list[1])
-    return shorten_name.(list)
+# Shortlist of oceans/seas of interest for me
+# Don't hesitate to add your own in PRs
+const SHORTLIST = [60,61,85,120,146,147,100]
+west_pacific() = 60
+east_pacific() = 61
+atlantic() = 85
+indian() = 120
+west_arctic() = 146
+east_arctic() = 147
+mediterranean() = 100
+# that have their functions built-in
+ispacific(P::Point2D, oceans) = P ∈ oceans[west_pacific()] || P ∈ oceans[east_pacific()]
+isatlantic(P::Point2D, oceans) = P ∈ oceans[atlantic()]
+isindian(P::Point2D, oceans) = P ∈ oceans[indian()]
+isarctic(P::Point2D, oceans) = P ∈ oceans[west_arctic()] || P ∈ oceans[east_arctic()]
+ismediterranean(P::Point2D, oceans) = P ∈ oceans[mediterranean()]
+isantarctic(P::Point2D, oceans) = lat(P) ≤ -40
+for ocn in (:pacific, :atlantic, :indian, :arctic, :mediterranean, :antarctic)
+    f = Symbol(:is, ocn)
+    @eval begin
+        $f(lat, lon, oceans) = $f(Point2D(lat,lon), oceans)
+        export $f
+    end
 end
 
-export OceanOrSea, oceanpolygons, whichsuperocean
 
-ispacific(P::Point2D) = P ∈ PACe.polygon || P ∈ PACw.polygon
-ispacific(lat,lon) = ispacific(Point2D(lat,lon))
+# Convert ±179.99899 to ±180
+function fixmeridian(lon)
+    if abs(lon) == 179.99899
+        return 181.0sign(lon)
+    elseif abs(lon) == 0.001
+        return 0.0
+    else
+        return lon
+    end
+end
 
-isatlantic(P::Point2D) = P ∈ ATL.polygon
-isatlantic(lat,lon) = isatlantic(Point2D(lat,lon))
+whichoceans(P::Point2D, oceans) = [name(ocn) for ocn in oceans if P ∈ ocn]
+whichoceans(lat, lon, oceans) = whichoceans(Point2D(lat,lon), oceans)
 
-isindian(P::Point2D) = P ∈ IND.polygon
-isindian(lat,lon) = isindian(Point2D(lat,lon))
-
-isarctic(P::Point2D) = P ∈ ARCe.polygon || P ∈ ARCw.polygon
-isarctic(lat,lon) = isarctic(Point2D(lat,lon))
-
-isantarctic(lat,lon) = lat ≤ -40
-
-export ispacific, isatlantic, isindian, isarctic, isantarctic
+whichshortlistoceans(P::Point2D, oceans) = [name(ocn) for ocn in oceans[SHORTLIST] if P ∈ ocn]
+whichshortlistoceans(lat, lon, oceans) = whichshortlistoceans(Point2D(lat,lon), oceans)
 
 
+function whichshortlistocean(lat, lon, oceans)
+    list = whichshortlistoceans(lat, lon, oceans)
+    if isempty(list)
+        return "None"
+    elseif (length(list) == 1)
+        return shorten_name(list[1])
+    else
+        return shorten_name.(list)
+    end
+end
 
+export OceanOrSea, oceanpolygons, whichshortlistoceans, whichshortlistocean, whichoceans
+
+Base.in(P::Point2D, ocn::OceanOrSea) = inpolygon(P, polygon(ocn), in=true, on=true, out=false)
+
+#ispacific(P::Point2D) = P ∈ PACe || P ∈ PACw
+#ispacific(lat,lon) = ispacific(Point2D(lat,lon))
+#
+#isatlantic(P::Point2D) = P ∈ ATL
+#isatlantic(lat,lon) = isatlantic(Point2D(lat,lon))
+#
+#isindian(P::Point2D) = P ∈ IND
+#isindian(lat,lon) = isindian(Point2D(lat,lon))
+#
+#isarctic(P::Point2D) = P ∈ ARCe || P ∈ ARCw
+#isarctic(lat,lon) = isarctic(Point2D(lat,lon))
+#
+#isantarctic(lat,lon) = lat ≤ -40
+#
+#export ispacific, isatlantic, isindian, isarctic, isantarctic
 
 function shorten_name(name)
     name = replace(name, " Ocean" => "")
@@ -107,17 +148,17 @@ function registerfile(datadepname)
     ))
 end
 
-# once everything is set up, build it and export it
-const OCEANS = oceanpolygons()
-const SUPEROCEANS = OCEANS[[5,6,9,10,11,12]]
-const PACe = SUPEROCEANS[1]
-const PACw = SUPEROCEANS[2]
-const ATL = SUPEROCEANS[3]
-const IND = SUPEROCEANS[4]
-const ARCe = SUPEROCEANS[5]
-const ARCw = SUPEROCEANS[6]
-
-export OCEANS, SUPEROCEANS
+## once everything is set up, build it and export it
+#const OCEANS = oceanpolygons()
+#const SUPEROCEANS = OCEANS[[5,6,9,10,11,12]]
+#const PACe = SUPEROCEANS[1]
+#const PACw = SUPEROCEANS[2]
+#const ATL = SUPEROCEANS[3]
+#const IND = SUPEROCEANS[4]
+#const ARCe = SUPEROCEANS[5]
+#const ARCw = SUPEROCEANS[6]
+#
+#export OCEANS, SUPEROCEANS
 
 
 end # module
