@@ -43,3 +43,22 @@ scatter!(lons, lats, title="Which ocean basin?", marker=:c, size=0.1, zcolor=col
 
 I made this package for myself so it likely has some bugs.
 PRs welcome!
+
+---
+
+> Note:
+>
+> This package uses polygons from the [*Limits of oceans and seas in digitized, machine readable* dataset](https://figshare.com/articles/Limits_of_oceans_and_seas_in_digitized_machine_readable_form/10860656), which overlap with land.
+> For example, this
+> 
+> ![ATL](https://user-images.githubusercontent.com/4486578/79623984-40133480-8162-11ea-84b8-3b654a09abaf.png)
+> 
+> is the Atlantic basin, plotted via
+>
+> ```julia
+> coast(region=:d, proj=:Robinson, frame=:g, res=:crude, area=10000, land=:lemonchiffon1, water=:lightsteelblue1, figsize=12)
+> x = [P.lon for P in OCEANS[85].polygon] # Atlantic is 85th 
+> y = [P.lat for P in OCEANS[85].polygon]
+> plot!(x,y, lw=1, lc=:red, title="Atlantic polygon", show=true, savefig="ATL.png")
+> ```
+
