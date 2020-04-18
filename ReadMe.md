@@ -48,7 +48,7 @@ PRs welcome!
 
 > Note:
 >
-> This package uses polygons from the [*Limits of oceans and seas in digitized, machine readable* dataset](https://figshare.com/articles/Limits_of_oceans_and_seas_in_digitized_machine_readable_form/10860656), which overlap with land.
+> This package uses polygons from the [*Limits of oceans and seas in digitized, machine readable form* dataset](https://figshare.com/articles/Limits_of_oceans_and_seas_in_digitized_machine_readable_form/10860656), which overlap with land.
 > For example, this
 > 
 > <img src="https://user-images.githubusercontent.com/4486578/79623984-40133480-8162-11ea-84b8-3b654a09abaf.png" width="50%"/>
