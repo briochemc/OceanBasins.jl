@@ -21,10 +21,28 @@ A set of simple functions to determine which ocean basin a (lat,lon) coordinate 
 </p>
 
 
-It mainly contains some functions like, e.g., `ispacific`, to algorithmically determine if a (lat,lon) coordinate lies in an ocean basin or a sea of interest.
-I plan to use it to mask regions of interest for global marine biogeochemical modelling (with [AIBECS.jl](https://github.com/briochemc/AIBECS.jl)).
+OceanBasins.jl essentially provides functions to algorithmically determine if a (lat,lon) coordinate lies in a specific ocean or sea.
+(It was developed to mask regions of interest for my personal research endeavours, i.e., global marine biogeochemical modelling with [AIBECS.jl](https://github.com/briochemc/AIBECS.jl).)
 
-The image at the top was produced by using `ispacific`-like functions (and using GMT.jl):
+### Usage
+
+To load the ocean/sea polygons, start with
+
+```julia
+OCEANS = oceanpolygons()
+```
+
+Note that the first time you call `oceanpolygons()`, it will download the [*Limits of oceans and seas in digitized, machine readable* dataset](https://figshare.com/articles/Limits_of_oceans_and_seas_in_digitized_machine_readable_form/10860656) and store it in a safe place using [DataDeps.jl](https://github.com/oxinabox/DataDeps.jl).
+
+You can then test if a given `lat,lon` coordinate is, e.g., in the Pacific, via
+
+```julia
+ispacific(lat, lon, OCEANS)
+```
+
+---
+
+The image at the top was produced by using `ispacific`-like functions (and [GMT.jl](https://github.com/GenericMappingTools/GMT.jl) for the plotting):
 
 ```julia
 using Libdl
@@ -46,19 +64,20 @@ PRs welcome!
 
 ---
 
-> Note:
->
-> This package uses polygons from the [*Limits of oceans and seas in digitized, machine readable form* dataset](https://figshare.com/articles/Limits_of_oceans_and_seas_in_digitized_machine_readable_form/10860656), which overlap with land.
-> For example, this
-> 
-> <img src="https://user-images.githubusercontent.com/4486578/79623984-40133480-8162-11ea-84b8-3b654a09abaf.png" width="50%"/>
-> 
-> is the Atlantic basin, plotted via
->
-> ```julia
-> coast(region=:d, proj=:Robinson, frame=:g, res=:crude, area=10000, land=:lemonchiffon1, water=:lightsteelblue1, figsize=12)
-> x = [P.lon for P in OCEANS[85].polygon] # Atlantic is 85th 
-> y = [P.lat for P in OCEANS[85].polygon]
-> plot!(x,y, lw=1, lc=:red, title="Atlantic polygon", show=true, savefig="ATL.png")
-> ```
+### Warning
+
+**This package does *not* determine if a coordinate is on land.**
+This is because the polygons from the [*Limits of oceans and seas in digitized, machine readable* dataset](https://figshare.com/articles/Limits_of_oceans_and_seas_in_digitized_machine_readable_form/10860656) overlap with land.
+For example, this
+
+<img src="https://user-images.githubusercontent.com/4486578/79623984-40133480-8162-11ea-84b8-3b654a09abaf.png" width="50%"/>
+
+is the Atlantic basin, plotted via
+
+```julia
+coast(region=:d, proj=:Robinson, frame=:g, res=:crude, area=10000, land=:lemonchiffon1, water=:lightsteelblue1, figsize=12)
+x = [P.lon for P in OCEANS[85].polygon] # Atlantic is 85th
+y = [P.lat for P in OCEANS[85].polygon]
+plot!(x,y, lw=1, lc=:red, title="Atlantic polygon", show=true, savefig="ATL.png")
+```
 
