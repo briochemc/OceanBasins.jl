@@ -19,12 +19,11 @@ end
 name(o::OceanOrSea) = o.name
 polygon(o::OceanOrSea) = o.polygon
 
+# lat, lon because that's how the polygons are made
 struct Point2D{T} <: FieldVector{2,T}
     lat::T
     lon::T
 end
-lat(P::Point2D) = P.lat
-lon(P::Point2D) = P.lon
 
 function oceanpolygons(datadepname="Oceans_and_seas")
     cells, headers = readdata(datadepname)
@@ -49,16 +48,39 @@ west_arctic() = 146
 east_arctic() = 147
 mediterranean() = 100
 # that have their functions built-in
-ispacific(P::Point2D, oceans) = P ∈ oceans[west_pacific()] || P ∈ oceans[east_pacific()]
-isatlantic(P::Point2D, oceans) = P ∈ oceans[atlantic()]
-isindian(P::Point2D, oceans) = P ∈ oceans[indian()]
-isarctic(P::Point2D, oceans) = P ∈ oceans[west_arctic()] || P ∈ oceans[east_arctic()]
-ismediterranean(P::Point2D, oceans) = P ∈ oceans[mediterranean()]
-isantarctic(P::Point2D, oceans) = lat(P) ≤ -40
+ispacific(P, oceans) = P ∈ oceans[west_pacific()] || P ∈ oceans[east_pacific()]
+isatlantic(P, oceans) = P ∈ oceans[atlantic()]
+isindian(P, oceans) = P ∈ oceans[indian()]
+isarctic(P, oceans) = P ∈ oceans[west_arctic()] || P ∈ oceans[east_arctic()]
+ismediterranean(P, oceans) = P ∈ oceans[mediterranean()]
+isantarctic(P, oceans) = P.lat ≤ -40
 for ocn in (:pacific, :atlantic, :indian, :arctic, :mediterranean, :antarctic)
     f = Symbol(:is, ocn)
     @eval begin
+        """
+            $($f)(NT::NamedTuple, oceans)
+
+        Returns `$($f)(NT.lat, NT.lon, oceans)`.
+        """
+        $f(NT::NamedTuple, oceans) = $f(NT.lat, NT.lon, oceans)
+        """
+            $($f)(Ps::Vector, oceans)
+
+        Returns the bit vector `[$($f)(P, oceans) for P in Ps]`.
+        """
+        $f(Ps::Vector, oceans) = [$f(P, oceans) for P in Ps]
+        """
+            $($f)(lat, lon, oceans)
+
+        Returns `true` if the `(lat,lon)` coordinate is the polygon.
+        """
         $f(lat, lon, oceans) = $f(Point2D(lat,lon), oceans)
+        """
+            $($f)(lat::Vector, lon::Vector, oceans)
+
+        Returns `$($f)(Point2D.(lat,lon), oceans)`.
+        """
+        $f(lat::Vector, lon::Vector, oceans) = $f(Point2D.(lat,lon), oceans)
         export $f
     end
 end
@@ -75,10 +97,10 @@ function fixmeridian(lon)
     end
 end
 
-whichoceans(P::Point2D, oceans) = [name(ocn) for ocn in oceans if P ∈ ocn]
+whichoceans(P, oceans) = [name(ocn) for ocn in oceans if P ∈ ocn]
 whichoceans(lat, lon, oceans) = whichoceans(Point2D(lat,lon), oceans)
 
-whichshortlistoceans(P::Point2D, oceans) = [name(ocn) for ocn in oceans[SHORTLIST] if P ∈ ocn]
+whichshortlistoceans(P, oceans) = [name(ocn) for ocn in oceans[SHORTLIST] if P ∈ ocn]
 whichshortlistoceans(lat, lon, oceans) = whichshortlistoceans(Point2D(lat,lon), oceans)
 
 
@@ -95,7 +117,8 @@ end
 
 export OceanOrSea, oceanpolygons, whichshortlistoceans, whichshortlistocean, whichoceans
 
-Base.in(P::Point2D, ocn::OceanOrSea) = inpolygon(P, polygon(ocn), in=true, on=true, out=false)
+Base.in(P, ocn::OceanOrSea) = inpolygon(center(P), polygon(ocn), in=true, on=true, out=false)
+center(P) = [P[1], mod(P[2] + 180, 360) - 180]
 
 #ispacific(P::Point2D) = P ∈ PACe || P ∈ PACw
 #ispacific(lat,lon) = ispacific(Point2D(lat,lon))
