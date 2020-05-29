@@ -54,7 +54,11 @@ isindian(P, oceans) = P ∈ oceans[indian()]
 isarctic(P, oceans) = P ∈ oceans[west_arctic()] || P ∈ oceans[east_arctic()]
 ismediterranean(P, oceans) = P ∈ oceans[mediterranean()]
 isantarctic(P, oceans) = P.lat ≤ -40
-for ocn in (:pacific, :atlantic, :indian, :arctic, :mediterranean, :antarctic)
+isatlantic2(P, oceans) = isatlantic(P, oceans) && !isantarctic(P, oceans)
+ispacific2(P, oceans) = ispacific(P, oceans) && !isantarctic(P, oceans)
+isindian2(P, oceans) = isindian(P, oceans) && !isantarctic(P, oceans)
+for ocn in (:pacific, :atlantic, :indian, :arctic, :mediterranean, :antarctic,
+            :pacific2, :atlantic2, :indian2)
     f = Symbol(:is, ocn)
     @eval begin
         """
