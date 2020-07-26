@@ -10,4 +10,5 @@ const OCEANS = oceanpolygons()
     @test isindian(0, 90, OCEANS)
     @test isantarctic(-40, 0, OCEANS)
     @test ismediterranean(31, 15, OCEANS)
+    @test isindonesian(0, 120, OCEANS)
 end
