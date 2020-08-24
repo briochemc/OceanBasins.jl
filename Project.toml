@@ -1,7 +1,7 @@
 name = "OceanBasins"
 uuid = "d1bb7020-b2be-4340-9d18-d24ca645bddb"
 authors = ["Benoit Pasquier <briochemc@gmail.com>"]
-version = "0.1.4"
+version = "0.1.5"
 
 [deps]
 DataDeps = "124859b0-ceae-595e-8997-d05f6a7a8dfe"

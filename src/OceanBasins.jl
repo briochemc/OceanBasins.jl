@@ -62,8 +62,15 @@ isSOatlantic(P, oceans) = isatlantic(convert_65S_to_90S(P), oceans) && isantarct
 isSOpacific(P, oceans) = ispacific(convert_65S_to_90S(P), oceans) && isantarctic(P, oceans)
 isSOindian(P, oceans) = isindian(convert_65S_to_90S(P), oceans) && isantarctic(P, oceans)
 isindonesian(P, oceans) = foldl(|, P ∈ oceans[i] for i in 11:37) # Indo throughflow (TODO fix name?)
+ismediterranean2(P, oceans) = ismediterranean(P, oceans) || ((30 ≤ P.lat ≤ 50) && !isatlantic(P, oceans) && !ispacific(P, oceans))
+isNPAC(P, oceans) = ispacific(P, oceans) && P.lat > 0
+isNATL(P, oceans) = isatlantic(P, oceans) && P.lat > 0
+isSPAC(P, oceans) = ispacific(P, oceans) && !isantarctic(P, oceans) && P.lat ≤ 0
+isSATL(P, oceans) = isatlantic(P, oceans) && !isantarctic(P, oceans) && P.lat ≤ 0
+
 for ocn in (:pacific, :atlantic, :indian, :arctic, :mediterranean, :antarctic,
-            :pacific2, :atlantic2, :indian2, :indonesian, :SOatlantic, :SOpacific, :SOindian)
+            :pacific2, :atlantic2, :indian2, :indonesian, :SOatlantic, :SOpacific,
+            :SOindian, :mediterranean2, :NPAC, :SPAC, :NATL, :SATL)
     f = Symbol(:is, ocn)
     @eval begin
         """
