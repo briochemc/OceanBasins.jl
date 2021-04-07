@@ -1,7 +1,9 @@
 module OceanBasins
 
-using DataDeps, DelimitedFiles
-using StaticArrays, PolygonOps
+using DataDeps
+using DelimitedFiles
+using StaticArrays
+using PolygonOps
 
 
 
@@ -136,22 +138,6 @@ export OceanOrSea, oceanpolygons, whichshortlistoceans, whichshortlistocean, whi
 Base.in(P, ocn::OceanOrSea) = inpolygon(center(P), polygon(ocn), in=true, on=true, out=false)
 center(P) = [P[1], mod(P[2] + 180, 360) - 180]
 
-#ispacific(P::Point2D) = P ∈ PACe || P ∈ PACw
-#ispacific(lat,lon) = ispacific(Point2D(lat,lon))
-#
-#isatlantic(P::Point2D) = P ∈ ATL
-#isatlantic(lat,lon) = isatlantic(Point2D(lat,lon))
-#
-#isindian(P::Point2D) = P ∈ IND
-#isindian(lat,lon) = isindian(Point2D(lat,lon))
-#
-#isarctic(P::Point2D) = P ∈ ARCe || P ∈ ARCw
-#isarctic(lat,lon) = isarctic(Point2D(lat,lon))
-#
-#isantarctic(lat,lon) = lat ≤ -40
-#
-#export ispacific, isatlantic, isindian, isarctic, isantarctic
-
 function shorten_name(name)
     name = replace(name, " Ocean" => "")
     name = replace(name, "South " => "S")
@@ -186,18 +172,5 @@ function registerfile(datadepname)
         "73055ed2b356c352d5c99ef0a1fb03aef9819bc7c55b02cc26eaecd14cc5377d"
     ))
 end
-
-## once everything is set up, build it and export it
-#const OCEANS = oceanpolygons()
-#const SUPEROCEANS = OCEANS[[5,6,9,10,11,12]]
-#const PACe = SUPEROCEANS[1]
-#const PACw = SUPEROCEANS[2]
-#const ATL = SUPEROCEANS[3]
-#const IND = SUPEROCEANS[4]
-#const ARCe = SUPEROCEANS[5]
-#const ARCw = SUPEROCEANS[6]
-#
-#export OCEANS, SUPEROCEANS
-
 
 end # module
