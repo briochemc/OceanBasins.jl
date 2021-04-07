@@ -157,19 +157,22 @@ function registerfile(datadepname)
     register(DataDep(
         datadepname,
         """
-    	Dataset: Limits of oceans and seas in digitized, machine readable form
-    	Website: https://figshare.com/articles/Limits_of_oceans_and_seas_in_digitized_machine_readable_form/10860656
-    	Author: IHO International Hydrographic Organization, Rainer Sieger
-    	Date of Publication: 2019-11-22T22:18:18Z
-    	License: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+        Dataset: Limits of oceans and seas in digitized, machine readable form
+        Website: https://doi.pangaea.de/10.1594/PANGAEA.777975
+        Author: IHO International Hydrographic Organization, Rainer Sieger
+        Date of Publication: March 20, 2012
+        License: https://creativecommons.org/licenses/by/3.0/legalcode
 
-    	This dataset is the digitized version of the printed "Limits of Oceans and Seas" (IHO, 1953). The report describes the boundaries of 148 oceans and seas. The given positions were typed into a spreadsheet and were completed to a right ordered polygon by hand using Google Earth. The dataset consists of five columns. The first column contains the name of the ocean or sea, column 2 and 3 contain the position of each polygon point (latitude, longitude). Column 4 contains an area index, column 5 a polygon index. These two indices structurize the dataset.
-    	The other version link provides a Google Earth layer in KML format (zipped). This layer consists of all polygons and names of oceans or seas at area centroid position given in dataset doi:10.1594/PANGAEA.777976.
+        This dataset is the digitized version of the printed "Limits of Oceans and Seas" (IHO, 1953).
+        The report describes the boundaries of 148 oceans and seas. The given positions were typed into a spreadsheet and were completed to a right ordered polygon by hand using Google Earth. The dataset consists of five columns.
+        The first column contains the name of the ocean or sea, column 2 and 3 contain the position of each polygon point (latitude, longitude). Column 4 contains an area index, column 5 a polygon index. These two indices structurize the dataset.
+        The other version link provides a Google Earth layer in KML format (zipped).
+        This layer consists of all polygons and names of oceans or seas at area centroid position given in dataset doi:10.1594/PANGAEA.777976.
 
-    	Please cite this dataset: International Hydrographic Organization, I. H. O., &amp; Sieger, R. (2012). <i>Limits of oceans and seas in digitized, machine readable form</i> [Data set]. PANGAEA - Data Publisher for Earth &amp; Environmental Science. https://doi.org/10.1594/PANGAEA.777975
-    	""",
-    	"https://ndownloader.figshare.com/files/19364984",
-        "73055ed2b356c352d5c99ef0a1fb03aef9819bc7c55b02cc26eaecd14cc5377d"
+        Please cite this dataset: International Hydrographic Organization, I. H. O., &amp; Sieger, R. (2012). <i>Limits of oceans and seas in digitized, machine readable form</i> [Data set]. PANGAEA - Data Publisher for Earth and Environmental Science. https://doi.org/10.1594/PANGAEA.777975
+        """,
+        ["https://doi.pangaea.de/10.1594/PANGAEA.777975?format=textfile"],
+        "29c1ec5a1df3e575ef53f0a29de8e3351189666e63e8c2827265aed2025a204b"
     ))
 end
 
