@@ -172,7 +172,7 @@ function registerfile(datadepname)
         Please cite this dataset: International Hydrographic Organization, I. H. O., &amp; Sieger, R. (2012). <i>Limits of oceans and seas in digitized, machine readable form</i> [Data set]. PANGAEA - Data Publisher for Earth and Environmental Science. https://doi.org/10.1594/PANGAEA.777975
         """,
         ["https://doi.pangaea.de/10.1594/PANGAEA.777975?format=textfile"],
-        "29c1ec5a1df3e575ef53f0a29de8e3351189666e63e8c2827265aed2025a204b"
+        "9f9d8780edd44987110f2b1d25f3b0ebfc9ae7bb793d9b6315d29630d2212aeb"
     ))
 end
 
