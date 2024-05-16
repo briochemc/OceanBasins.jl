@@ -7,13 +7,13 @@ A set of simple functions to determine which ocean basin a (lat,lon) coordinate 
 
 <p>
   <a href="https://github.com/briochemc/OceanBasins.jl/actions">
-    <img src="https://img.shields.io/github/workflow/status/briochemc/OceanBasins.jl/Mac%20OS%20X?label=OSX&logo=Apple&logoColor=white&style=flat-square">
+    <img src="https://img.shields.io/github/actions/workflow/status/briochemc/OceanBasins.jl/mac.yml?label=OSX&logo=Apple&logoColor=white&style=flat-square">
   </a>
   <a href="https://github.com/briochemc/OceanBasins.jl/actions">
-    <img src="https://img.shields.io/github/workflow/status/briochemc/OceanBasins.jl/Linux?label=Linux&logo=Linux&logoColor=white&style=flat-square">
+    <img src="https://img.shields.io/github/actions/workflow/status/briochemc/OceanBasins.jl/linux.yml?label=Linux&logo=Linux&logoColor=white&style=flat-square">
   </a>
   <a href="https://github.com/briochemc/OceanBasins.jl/actions">
-    <img src="https://img.shields.io/github/workflow/status/briochemc/OceanBasins.jl/Windows?label=Windows&logo=Windows&logoColor=white&style=flat-square">
+    <img src="https://img.shields.io/github/actions/workflow/status/briochemc/OceanBasins.jl/windows.yml?label=Windows&logo=Windows&logoColor=white&style=flat-square">
   </a>
   <a href="https://codecov.io/gh/briochemc/OceanBasins.jl">
     <img src="https://img.shields.io/codecov/c/github/briochemc/OceanBasins.jl/master?label=Codecov&logo=codecov&logoColor=white&style=flat-square">
